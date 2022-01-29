@@ -1,7 +1,19 @@
 import React, {useEffect, useState} from 'react';
 import {SafeAreaView, TextInput, View} from 'react-native';
 import {GooglePlacesAutocomplete} from 'react-native-google-places-autocomplete';
+import {useNavigation} from '@react-navigation/native';
+import PlaceRow from './PlaceRow';
 import styles from './styles';
+
+const homePlace = {
+  description: 'Home',
+  geometry: {location: {lat: 48.8152937, lng: 2.4597668}},
+};
+
+const workPlace = {
+  description: 'Work',
+  geometry: {location: {lat: 48.8496818, lng: 2.2940881}},
+};
 
 const DestinationSearch = () => {
   const [fromText, setFromText] = useState('');
@@ -10,10 +22,19 @@ const DestinationSearch = () => {
   const [originPlace, setOriginPlace] = useState(null);
   const [destinationPlace, setDestinationPlace] = useState(null);
 
-  useEffect(() => {
+  const navigation = useNavigation();
+
+  const checkNavigation = () => {
     if (originPlace && destinationPlace) {
-      console.warn('Redirect to results');
+      navigation.navigate('SearchResults', {
+        originPlace,
+        destinationPlace,
+      });
     }
+  };
+
+  useEffect(() => {
+    checkNavigation();
   }, [originPlace, destinationPlace]);
 
   return (
@@ -24,14 +45,24 @@ const DestinationSearch = () => {
           onPress={(data, details = null) => {
             setOriginPlace({data, details});
           }}
+          enablePoweredByContainer={false}
+          suppressDefaultStyles
+          currentLocation={true}
+          currentLocationLabel="Current location"
           styles={{
             textInput: styles.textInput,
+            container: styles.autocompleteContainer,
+            listView: styles.listView,
+            separator: styles.separator,
           }}
           fetchDetails
           query={{
             key: 'AIzaSyBz-3rgxFDeW9NnvEnKyZ-agJH-BN-Yy10',
             language: 'en',
           }}
+          renderRow={data => <PlaceRow data={data} />}
+          renderDescription={data => data.description || data.vicinity}
+          predefinedPlaces={[homePlace, workPlace]}
         />
 
         <GooglePlacesAutocomplete
@@ -39,15 +70,29 @@ const DestinationSearch = () => {
           onPress={(data, details = null) => {
             setDestinationPlace({data, details});
           }}
+          enablePoweredByContainer={false}
+          suppressDefaultStyles
           styles={{
             textInput: styles.textInput,
+            container: {...styles.autocompleteContainer, top: 55},
+            separator: styles.separator,
           }}
           fetchDetails
           query={{
             key: 'AIzaSyBz-3rgxFDeW9NnvEnKyZ-agJH-BN-Yy10',
             language: 'en',
           }}
+          renderRow={data => <PlaceRow data={data} />}
         />
+
+        {/* Circle near Origin input */}
+        <View style={styles.circle} />
+
+        {/* Line between dots */}
+        <View style={styles.line} />
+
+        {/* Square near Destination input */}
+        <View style={styles.square} />
       </View>
     </SafeAreaView>
   );
