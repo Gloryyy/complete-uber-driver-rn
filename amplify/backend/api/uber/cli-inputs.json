@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "serviceConfiguration": {
+    "apiName": "uber",
+    "serviceName": "AppSync",
+    "gqlSchemaPath": "C:\\Users\\CPU-MAJD\\Desktop\\workspace\\Uber-driver-clone\\Uber\\amplify\\backend\\api\\uber\\schema.graphql",
+    "defaultAuthType": {
+      "mode": "API_KEY",
+      "expirationTime": 7
+    }
+  }
+}
